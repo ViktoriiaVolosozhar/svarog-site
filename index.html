@@ -438,14 +438,24 @@
     position: sticky; top: 120px;
   }
   .tech-visual .image-group {
-    display: flex;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
   }
-  .tech-visual .image-group img {
-    width: 50%;
-    border-radius: 12px;
-    object-fit: cover;
-    position: static;
+  .tech-visual .image-group img:not(.img-full) {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+  .img-full {
+    grid-column: 1 / -1;
+    width: 70%;
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    object-fit: contain;
+    display: block;
   }
 
   /* ── RESULTS ── */
@@ -882,12 +892,12 @@
       </p>
     </div>
     <div class="about-image">
-      <img src="image/IMG_2654.png">
+      <img src="image/IMG_2654.webp">
     </div>
   </div>
   <div class="about-row reveal">
     <div class="about-image">
-      <img src="image/IMG_2662.png">
+      <img src="image/IMG_2662.webp">
     </div>
       <div class="about-points">
         <div class="about-point">
@@ -1063,8 +1073,9 @@
 
     <div class="tech-visual">
       <div class="image-group">
-        <img src="image/IMG_2803.png">
-        <img src="image/IMG_2805.png">
+        <img src="image/IMG_2803.webp">
+        <img src="image/IMG_2805.webp">
+        <img src="image/IMG_2696.webp" class="img-full">
       </div>
     </div>
   </div>
