@@ -200,16 +200,16 @@
     top: 50%;
     transform: translateY(-50%);
     width: 52%;
-    max-width: 600px;
+    max-width: 650px;
     opacity: .92;
     filter: drop-shadow(0 0 60px rgba(0,229,255,.25));
     animation: floatDrone 5s ease-in-out infinite, fadeRight .9s .2s ease both;
   }
 
   .hero-stats {
-    position: absolute;
-    bottom: 50px; left: 60px;
-    display: flex; gap: 40px;
+    display: flex;
+    gap: 40px;
+    margin-top: 32px;
     animation: fadeUp .7s .5s ease both;
   }
   .stat-item { text-align: left; }
@@ -282,7 +282,7 @@
   }
   .about-image img {
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     border-radius: 12px;
     border: 1px solid var(--border);
     filter: drop-shadow(0 0 30px rgba(0,229,255,.15));
@@ -446,19 +446,6 @@
     border-radius: 12px;
     object-fit: cover;
     position: static;
-  }
-  .tech-callout {
-    margin-top: 20px;
-    padding: 20px 24px;
-    background: rgba(0,255,136,.05);
-    border: 1px solid rgba(0,255,136,.2);
-    border-left: 3px solid var(--accent2);
-  }
-  .tech-callout p {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .8rem;
-    color: var(--accent2);
-    line-height: 1.6;
   }
 
   /* ── RESULTS ── */
@@ -673,7 +660,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 80px 32px 40px;
+    padding: 20px 32px 40px;
   }
   .mobile-menu.open { display: flex; }
   .mobile-menu a {
@@ -700,7 +687,6 @@
     .about-row, .about-grid, .tech-layout, .results-layout { grid-template-columns: 1fr; gap: 40px; }
     .adv-grid { grid-template-columns: 1fr 1fr; }
     #hero { padding: 120px 32px 120px; }
-    .hero-stats { left: 32px; bottom: 40px; gap: 28px; }
     section { padding: 70px 32px; }
     nav { padding: 16px 24px; }
     nav ul { display: none; }
@@ -903,15 +889,15 @@
         <div class="about-point">
           <span class="about-point-icon">⚙️</span>
           <div class="about-point-text">
-            <strong>Платформа</strong>
-            <span>FPV-платформа до 10 дюймів з модульним кріпленням озброєння та польотним контролером.</span>
+            <strong>Унікальність</strong>
+            <span>Унікальна система безвідкатного пострілу, що дозволяє не отримувати віддачу при пострилі на носій.</span>
           </div>
         </div>
         <div class="about-point">
           <span class="about-point-icon">🔦</span>
           <div class="about-point-text">
             <strong>Підсвічування цілі</strong>
-            <span>Інтегрована система лазерного підсвічування для точного захоплення та супроводу цілі.</span>
+            <span>Інтегрована система розпізнавання та підсвічування для точного захоплення та супроводу цілі.</span>
           </div>
         </div>
         <div class="about-point">
@@ -973,12 +959,7 @@
     <div class="spec-card">
       <div class="spec-icon">💥</div>
       <div class="spec-val">30 м</div>
-      <div class="spec-name">Радіус ураження техніки</div>
-    </div>
-    <div class="spec-card">
-      <div class="spec-icon">🎯</div>
-      <div class="spec-val">15 м</div>
-      <div class="spec-name">Ураження живих цілей</div>
+      <div class="spec-name">Дальність ураження цілі</div>
     </div>
   </div>
 </section>
@@ -995,12 +976,12 @@
     <div class="adv-card" data-num="01">
       <div class="adv-icon">♻️</div>
       <h3>Багаторазове використання</h3>
-      <p>На відміну від одноразових ракет — Svarog повертається після місії. Перезарядка, перевірка, і знову в бій.</p>
+      <p>На відміну від одноразових перехоплювачів — Svarog повертається після місії. Перезарядка, перевірка, і знову в бій.</p>
     </div>
     <div class="adv-card" data-num="02">
       <div class="adv-icon">💰</div>
       <h3>Економічна ефективність</h3>
-      <p>Вартість перехоплення у десятки разів нижча порівняно з ракетними комплексами протиповітряної оборони.</p>
+      <p>Вартість перехоплення нижча порівняно з іншими перехоплювачами.</p>
     </div>
     <div class="adv-card" data-num="03">
       <div class="adv-icon">🛡️</div>
@@ -1028,36 +1009,43 @@
       <div class="tech-item active">
         <span class="tech-num">01</span>
         <div>
-          <h4>Система підсвічування цілі</h4>
-          <p>Лазерне підсвічування для точного захоплення та утримання ворожого БПЛА в зоні ураження під час маневрів.</p>
+          <h4>Рама</h4>
+          <p>10-дюймова карбонова рама забезпечує оптимальне співвідношення міцності, ваги та стабільності під час польоту.</p>
         </div>
       </div>
       <div class="tech-item">
         <span class="tech-num">02</span>
         <div>
-          <h4>3D-стабілізація озброєння</h4>
-          <p>Антивібраційна платформа для стабілізації блоку стволів забезпечує точну стрільбу під час польоту.</p>
+          <h4>Контролер та ESC</h4>
+          <p>Польотний контролер і регулятор швидкості SpeedyBee F405 V4 60A гарантують надійність роботи та точне керування дроном у будь-яких умовах.</p>
         </div>
       </div>
       <div class="tech-item">
         <span class="tech-num">03</span>
         <div>
-          <h4>Інтегрований стрілецький модуль</h4>
-          <p>Модульний блок 2–6 стволів кріпиться на стандартне шасі. Швидка заміна в польових умовах.</p>
+          <h4>Пропелери</h4>
+          <p>Пропелери розміру 1050 забезпечують ефективну тягу та стабільність, оптимізовані для швидкісного FPV-польоту.</p>
         </div>
       </div>
       <div class="tech-item">
         <span class="tech-num">04</span>
         <div>
-          <h4>Мультирежимне управління</h4>
-          <p>Ручний FPV-режим для досвідченого оператора або напівавтономний режим супроводу цілі.</p>
+          <h4>Двигуни</h4>
+          <p>Двигуни 3115 900KV забезпечують високу потужність, швидкий відгук і стабільну роботу під навантаженням.</p>
         </div>
       </div>
       <div class="tech-item">
         <span class="tech-num">05</span>
         <div>
-          <h4>FPV-відеолінк дальньої дії</h4>
-          <p>ADON / ExpressLRS зв'язок для стабільного відеопотоку на дистанції до 20 км у складному радіосередовищі.</p>
+          <h4>Система зв’язку</h4>
+          <p>Технологія ELRS (ExpressLRS) забезпечує надійний та далекобійний зв’язок навіть у складному радіосередовищі.</p>
+        </div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-num">06</span>
+        <div>
+          <h4>Камера</h4>
+          <p>Цифрова система відеопередачі DJI O4 Air Unit Pro забезпечує високоякісне зображення та мінімальну затримку.</p>
         </div>
       </div>
     </div>
@@ -1066,14 +1054,6 @@
       <div class="image-group">
         <img src="IMG_2803.png">
         <img src="IMG_2805.png">
-      </div>
-      <div class="tech-callout">
-        <p>
-          ▸ PLATFORM: FPV 10" · POWER: 6S3P Li-ion<br>
-          ▸ CONTROL: ELRS / ADON · FPV: HD VIDEO LINK<br>
-          ▸ PAYLOAD: MODULAR 2–6 BARREL UNIT<br>
-          ▸ STATUS: FIELD TESTED ✓
-        </p>
       </div>
     </div>
   </div>
@@ -1099,15 +1079,15 @@
       <div class="result-card">
         <span class="result-icon">🎯</span>
         <div>
-          <h4>Підтверджено ураження на 15 м</h4>
-          <p>Реальні стрільби з AirK Li-ion 6S3P підтвердили ефективне ураження цілі на дистанції 15 м.</p>
+          <h4>Підтверджено ураження на 30 м</h4>
+          <p>Тестування підтвердили ефективне ураження цілі на дистанції до 30 м.</p>
         </div>
       </div>
       <div class="result-card">
         <span class="result-icon">🔁</span>
         <div>
           <h4>Багаторазовість підтверджена</h4>
-          <p>Платформа витримала серію бойових місій без критичних відмов конструктивних елементів.</p>
+          <p>Платформа витримала серію бойових місій без відмов.</p>
         </div>
       </div>
       <div class="result-card">
@@ -1120,16 +1100,16 @@
     </div>
 
     <div class="result-metric">
-      <div class="result-big">15</div>
+      <div class="result-big">30</div>
       <div class="result-unit">МЕТРІВ</div>
       <p class="result-desc">
-        Підтверджена дальність ефективного ураження живих цілей у реальних умовах випробувань з акумулятором AirK Li-ion 6S3P
+        Підтверджена дальність ефективного ураження цілей у реальних умовах (пробиття Li-ion АКБ)
       </p>
       <div style="margin-top:28px; padding-top:24px; border-top:1px solid var(--border);">
         <div style="display:flex; justify-content:space-around;">
           <div style="text-align:center;">
             <div style="font-family:'Orbitron',monospace; font-size:1.6rem; color:var(--accent); font-weight:700;">30м</div>
-            <div style="font-size:.75rem; color:var(--text-dim); letter-spacing:.1em; text-transform:uppercase; margin-top:4px;">Ураження техніки</div>
+            <div style="font-size:.75rem; color:var(--text-dim); letter-spacing:.1em; text-transform:uppercase; margin-top:4px;">Ураження цілей</div>
           </div>
           <div style="text-align:center;">
             <div style="font-family:'Orbitron',monospace; font-size:1.6rem; color:var(--accent); font-weight:700;">100%</div>
@@ -1198,13 +1178,20 @@
   function closeMob() {
     burger.classList.remove('open');
     mobileMenu.classList.remove('open');
+    mobileMenu.style.display = 'none';
     document.body.style.overflow = '';
   }
   if (burger) {
     burger.addEventListener('click', () => {
-      const isOpen = mobileMenu.classList.toggle('open');
-      burger.classList.toggle('open', isOpen);
-      document.body.style.overflow = isOpen ? 'hidden' : '';
+      const isOpen = !mobileMenu.classList.contains('open');
+      if (isOpen) {
+        mobileMenu.style.display = 'flex';
+        setTimeout(() => mobileMenu.classList.add('open'), 10);
+        burger.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      } else {
+        closeMob();
+      }
     });
   }
 
