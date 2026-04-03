@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlyShot — БПЛА-перехоплювач</title>
+<title>Svarog — БПЛА-перехоплювач</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -638,10 +638,6 @@
     100% { top: 100vh; }
   }
 
-  .hero-image-mobile {
-    display: none;
-  }
-
   /* ── HAMBURGER BUTTON ── */
   .nav-burger {
     display: none;
@@ -667,8 +663,8 @@
 
   /* ── MOBILE MENU DRAWER ── */
   .mobile-menu {
-    display: flex;
-    position: fixed;
+    display: none;
+    pointer-events: none;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(3,10,15,.97);
     backdrop-filter: blur(16px);
@@ -680,7 +676,6 @@
     padding: 80px 32px 40px;
     transform: translateX(100%);
     transition: transform .35s cubic-bezier(.4,0,.2,1);
-    pointer-events: none;
   }
   .mobile-menu.open { transform: translateX(0); pointer-events: all; }
   .mobile-menu a {
@@ -700,7 +695,7 @@
     font-family: 'Share Tech Mono', monospace;
     font-size: .65rem; color: var(--text-dim); letter-spacing: .15em; margin-top: 24px;
   }
-
+  .hero-image-mobile { display: none; }
   /* ── TABLET ── */
   @media (max-width: 1100px) {
     .hero-image { display: none; }
@@ -712,6 +707,7 @@
     nav { padding: 16px 24px; }
     nav ul { display: none; }
     .nav-burger { display: flex; }
+    .mobile-menu { display: flex; }
     footer { padding: 20px 32px; flex-direction: column; gap: 10px; text-align: center; }
     .tech-visual { position: static; }
     .specs-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
@@ -722,27 +718,25 @@
     nav { padding: 14px 20px; }
     .logo { font-size: 1.15rem; }
 
-    #hero { padding: 90px 20px 32px; min-height: unset; align-items: flex-start; }
+    #hero { padding: 90px 20px 150px; min-height: 100svh; align-items: flex-start; }
     h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); line-height: 1.15; }
     .hero-badge { font-size: .6rem; padding: 5px 12px; letter-spacing: .1em; }
     .hero-sub { font-size: 1rem; margin-bottom: 32px; }
     .btn-group { flex-direction: column; gap: 12px; }
     .btn-primary, .btn-secondary { width: 100%; justify-content: center; padding: 14px 20px; font-size: .75rem; }
-
-    .hero-image-mobile {
-      display: block;
-      width: 100%;
-      margin-top: 28px;
-      filter: drop-shadow(0 0 30px rgba(0,229,255,.3));
-      animation: fadeUp .8s .4s ease both;
-    }
     .hero-stats {
       position: static;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 20px;
+      margin-top: 16px;
       width: 100%;
+    }
+    .hero-image-mobile {
+      display: block;
+      width: 100%;
+      margin-top: 24px;
+      filter: drop-shadow(0 0 30px rgba(0,229,255,.3));
     }
     .stat-val { font-size: 1.4rem; }
     .stat-lbl { font-size: .6rem; }
@@ -817,7 +811,7 @@
 
 <!-- NAV -->
 <nav>
-  <div class="logo">Fly<span>Shot</span></div>
+  <div class="logo">Svarog</div>
   <ul>
     <li><a href="#about">Про продукт</a></li>
     <li><a href="#specs">Характеристики</a></li>
@@ -839,7 +833,7 @@
   <a href="#tech"       onclick="closeMob()">Технології</a>
   <a href="#results"    onclick="closeMob()">Результати</a>
   <a href="#cta"        onclick="closeMob()" class="mob-cta">Зв'язатись</a>
-  <div class="mobile-menu-flag">FLYSHOT · DEFENSE TECH UKRAINE 🇺🇦</div>
+  <div class="mobile-menu-flag">SVAROG · DEFENSE TECH UKRAINE 🇺🇦</div>
 </div>
 
 <!-- HERO -->
@@ -858,30 +852,28 @@
         ◈ Зв'язатись
       </a>
     </div>
-
-    <!-- зображення дрона — тільки для мобільного -->
-    <img class="hero-image-mobile" src="IMG_2666.png" alt="FlyShot БПЛА">
+    <img class="hero-image-mobile" src="IMG_2666.png" alt="Svarog БПЛА">
   </div>
 
-  <!-- drone image hero -->
-  <img class="hero-image" src="IMG_2666.png" alt="FlyShot БПЛА" >
-
-  <div class="hero-stats">
-    <div class="stat-item">
-      <div class="stat-val">20км</div>
-      <div class="stat-lbl">Дальність</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-val">110</div>
-      <div class="stat-lbl">км/год макс.</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-val">30хв</div>
-      <div class="stat-lbl">Час польоту</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-val">6</div>
-      <div class="stat-lbl">Стволів</div>
+<!-- drone image hero -->
+    <img class="hero-image" src="IMG_2666.png" alt="Svarog БПЛА">
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-val">20км</div>
+        <div class="stat-lbl">Дальність</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">110</div>
+        <div class="stat-lbl">км/год макс.</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">30хв</div>
+        <div class="stat-lbl">Час польоту</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">6</div>
+        <div class="stat-lbl">Стволів</div>
+      </div>
     </div>
   </div>
 </section>
@@ -891,10 +883,10 @@
   <div class="about-row reveal">
     <div class="about-text">
       <div class="section-label">// 01 — ПРО ПРОДУКТ</div>
-      <h2 class="section-title">FlyShot — повітряний мисливець<br>нового покоління</h2>
+      <h2 class="section-title">Svarog — повітряний мисливець<br>нового покоління</h2>
       <div class="divider"></div>
       <p class="section-desc">
-        Компактний, швидкий та смертоносний. FlyShot — це БПЛА-перехоплювач з модульною системою озброєння, розроблений для надійної нейтралізації ворожих FPV та дронів-розвідників у польоті.
+        Компактний, швидкий та смертоносний. Svarog — це БПЛА-перехоплювач з модульною системою озброєння, розроблений для надійної нейтралізації ворожих FPV та дронів-розвідників у польоті.
       </p>
     </div>
     <div class="about-image">
@@ -1000,7 +992,7 @@
 <section id="advantages">
   <div class="reveal">
     <div class="section-label">// 03 — ПЕРЕВАГИ</div>
-    <h2 class="section-title">Чому FlyShot?</h2>
+    <h2 class="section-title">Чому Svarog?</h2>
     <div class="divider"></div>
     <p class="section-desc">Революційний підхід до протидії БПЛА-загрозам — ефективний, економічний, безпечний.</p>
   </div>
@@ -1008,7 +1000,7 @@
     <div class="adv-card" data-num="01">
       <div class="adv-icon">♻️</div>
       <h3>Багаторазове використання</h3>
-      <p>На відміну від одноразових ракет — FlyShot повертається після місії. Перезарядка, перевірка, і знову в бій.</p>
+      <p>На відміну від одноразових ракет — Svarog повертається після місії. Перезарядка, перевірка, і знову в бій.</p>
     </div>
     <div class="adv-card" data-num="02">
       <div class="adv-icon">💰</div>
@@ -1032,7 +1024,7 @@
 <section id="tech">
   <div class="reveal">
     <div class="section-label">// 04 — ТЕХНОЛОГІЇ</div>
-    <h2 class="section-title">Під капотом FlyShot</h2>
+    <h2 class="section-title">Під капотом Svarog</h2>
     <div class="divider"></div>
     <p class="section-desc">Інтеграція передових компонентів у бойову платформу нового покоління.</p>
   </div>
@@ -1098,7 +1090,7 @@
     <div class="section-label">// 05 — РЕЗУЛЬТАТИ ВИПРОБУВАНЬ</div>
     <h2 class="section-title">Підтверджено в полі</h2>
     <div class="divider"></div>
-    <p class="section-desc">FlyShot пройшов реальні польотні випробування з документально підтвердженими результатами.</p>
+    <p class="section-desc">Svarog пройшов реальні польотні випробування з документально підтвердженими результатами.</p>
   </div>
   <div class="results-layout reveal">
     <div class="result-cards">
@@ -1196,8 +1188,8 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="logo">Fly<span>Shot</span></div>
-  <div class="footer-text">© 2026 FLYSHOT · DEFENSE TECH UKRAINE · ALL RIGHTS RESERVED</div>
+  <div class="logo">Svarog</div>
+  <div class="footer-text">© 2026 SVAROG · DEFENSE TECH UKRAINE · ALL RIGHTS RESERVED</div>
   <div class="footer-text">MADE IN UKRAINE 🇺🇦</div>
 </footer>
 
