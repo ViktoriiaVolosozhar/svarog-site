@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlyShot — БПЛА-перехоплювач</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030a0f;
+    --bg2: #050e15;
+    --surface: #081620;
+    --surface2: #0b1e2d;
+    --accent: #00e5ff;
+    --accent2: #00ff88;
+    --accent3: #ff4400;
+    --text: #c8dde8;
+    --text-dim: #5a7a8a;
+    --border: rgba(0,229,255,0.15);
+    --glow: rgba(0,229,255,0.4);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: .6;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 60px;
+    background: rgba(3,10,15,.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.4rem;
+    letter-spacing: .1em;
+    color: #fff;
+  }
+  .logo span { color: var(--accent); }
+  nav ul { list-style: none; display: flex; gap: 36px; }
+  nav ul a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: .85rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    transition: color .25s;
+  }
+  nav ul a:hover { color: var(--accent); }
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent) !important;
+    padding: 8px 22px;
+    font-family: 'Orbitron', monospace;
+    font-size: .75rem !important;
+    cursor: pointer;
+    letter-spacing: .1em;
+    transition: background .25s, box-shadow .25s !important;
+  }
+  .nav-cta:hover { background: rgba(0,229,255,.1); box-shadow: 0 0 20px var(--glow); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 120px 60px 80px;
+  }
+
+  /* grid background */
+  #hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* radial glow */
+  #hero::after {
+    content: '';
+    position: absolute;
+    top: -20%; left: -10%;
+    width: 70%; height: 120%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(0,229,255,.07) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 700px;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,229,255,.07);
+    border: 1px solid var(--border);
+    padding: 6px 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .7rem;
+    letter-spacing: .15em;
+    color: var(--accent);
+    margin-bottom: 28px;
+    animation: fadeUp .6s ease both;
+  }
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent2);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -.01em;
+    color: #fff;
+    margin-bottom: 24px;
+    animation: fadeUp .7s .1s ease both;
+  }
+  h1 .accent { color: var(--accent); }
+  h1 .accent2 { color: var(--accent2); }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 44px;
+    animation: fadeUp .7s .2s ease both;
+  }
+
+  .btn-group { display: flex; gap: 16px; flex-wrap: wrap; animation: fadeUp .7s .3s ease both; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent);
+    color: #000;
+    padding: 14px 32px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: .8rem;
+    letter-spacing: .1em;
+    text-decoration: none;
+    border: none; cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: transform .2s, box-shadow .2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,255,.4); }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: transparent;
+    color: var(--text);
+    padding: 14px 32px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
+    font-size: .8rem;
+    letter-spacing: .1em;
+    text-decoration: none;
+    border: 1px solid rgba(200,221,232,.2);
+    cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: border-color .2s, color .2s;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-image {
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52%;
+    max-width: 600px;
+    opacity: .92;
+    filter: drop-shadow(0 0 60px rgba(0,229,255,.25));
+    animation: floatDrone 5s ease-in-out infinite, fadeRight .9s .2s ease both;
+  }
+
+  .hero-stats {
+    position: absolute;
+    bottom: 50px; left: 60px;
+    display: flex; gap: 40px;
+    animation: fadeUp .7s .5s ease both;
+  }
+  .stat-item { text-align: left; }
+  .stat-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-lbl {
+    font-size: .7rem;
+    letter-spacing: .1em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── SECTION BASE ── */
+  section { padding: 100px 60px; }
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .7rem;
+    letter-spacing: .2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  .section-desc {
+    color: var(--text-dim);
+    max-width: 560px;
+    line-height: 1.7;
+    font-size: 1.05rem;
+  }
+  .divider {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    margin: 24px 0;
+  }
+
+  /* ── ABOUT ── */
+  #about { background: var(--bg2); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 60px;
+  }
+  .about-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-top: 60px;
+  }
+  .about-image {
+    position: relative;
+    display: flex;
+    flex-direction: column; 
+    gap: 20px; 
+  }
+  .about-image img {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    filter: drop-shadow(0 0 30px rgba(0,229,255,.15));
+  }
+  .corner {
+    position: absolute;
+    width: 20px; height: 20px;
+  }
+  .corner-tl { top: -2px; left: -2px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .corner-tr { top: -2px; right: -2px; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+  .corner-bl { bottom: -2px; left: -2px; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .corner-br { bottom: -2px; right: -2px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+
+  .about-points { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
+  .about-point {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 20px;
+    background: rgba(0,229,255,.03);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    transition: background .25s;
+  }
+  .about-point:hover { background: rgba(0,229,255,.06); }
+  .about-point-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+  .about-point-text strong { color: #fff; display: block; margin-bottom: 4px; font-size: 1rem; }
+  .about-point-text span { color: var(--text-dim); font-size: .9rem; line-height: 1.5; }
+
+  /* ── SPECS ── */
+  #specs { background: var(--bg); position: relative; overflow: hidden; }
+  #specs::before {
+    content: '';
+    position: absolute;
+    top: 0; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,255,136,.05) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2px;
+    margin-top: 60px;
+    border: 1px solid var(--border);
+  }
+  .spec-card {
+    background: var(--surface);
+    padding: 28px 24px;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+    transition: background .25s, border-color .25s;
+    cursor: default;
+  }
+  .spec-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .spec-card:hover { background: var(--surface2); border-color: var(--border); }
+  .spec-card:hover::before { opacity: 1; }
+  .spec-icon { font-size: 1.5rem; margin-bottom: 12px; }
+  .spec-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .spec-name {
+    font-size: .75rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* ── ADVANTAGES ── */
+  #advantages { background: var(--bg2); }
+  .adv-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 60px;
+  }
+  .adv-card {
+    padding: 32px 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: transform .25s, box-shadow .25s;
+  }
+  .adv-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,229,255,.1); }
+  .adv-card::after {
+    content: attr(data-num);
+    position: absolute;
+    right: 20px; bottom: 12px;
+    font-family: 'Orbitron', monospace;
+    font-size: 4rem;
+    font-weight: 900;
+    color: rgba(0,229,255,.04);
+    line-height: 1;
+  }
+  .adv-icon { font-size: 2rem; margin-bottom: 16px; }
+  .adv-card h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+  .adv-card p { color: var(--text-dim); font-size: .95rem; line-height: 1.6; }
+
+  /* ── TECH ── */
+  #tech { background: var(--bg); }
+  .tech-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 80px;
+    align-items: start;
+    margin-top: 60px;
+  }
+  .tech-list { display: flex; flex-direction: column; gap: 2px; }
+  .tech-item {
+    display: flex; gap: 20px; align-items: flex-start;
+    padding: 22px 24px;
+    background: var(--surface);
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .tech-item.active, .tech-item:hover {
+    background: var(--surface2);
+    border-color: var(--border);
+    border-left-color: var(--accent2);
+  }
+  .tech-num {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--accent2);
+    font-size: .8rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .tech-item h4 { color: #fff; font-size: 1rem; margin-bottom: 4px; }
+  .tech-item p { color: var(--text-dim); font-size: .9rem; line-height: 1.5; }
+
+  .tech-visual {
+    position: sticky; top: 120px;
+  }
+  .tech-visual .image-group {
+    display: flex;
+    gap: 20px;
+  }
+  .tech-visual .image-group img {
+    width: 50%;
+    border-radius: 12px;
+    object-fit: cover;
+    position: static;
+  }
+  .tech-callout {
+    margin-top: 20px;
+    padding: 20px 24px;
+    background: rgba(0,255,136,.05);
+    border: 1px solid rgba(0,255,136,.2);
+    border-left: 3px solid var(--accent2);
+  }
+  .tech-callout p {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .8rem;
+    color: var(--accent2);
+    line-height: 1.6;
+  }
+
+  /* ── RESULTS ── */
+  #results {
+    background: var(--bg2);
+    position: relative; overflow: hidden;
+  }
+  #results::before {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255,68,0,.05) 0%, transparent 65%);
+  }
+
+  .results-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-top: 60px;
+  }
+  .result-cards { display: flex; flex-direction: column; gap: 16px; }
+  .result-card {
+    display: flex; align-items: center; gap: 20px;
+    padding: 24px 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: border-color .25s;
+  }
+  .result-card:hover { border-color: rgba(0,255,136,.3); }
+  .result-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent2);
+  }
+  .result-icon { font-size: 2rem; flex-shrink: 0; }
+  .result-card h4 { color: #fff; font-size: 1rem; margin-bottom: 4px; }
+  .result-card p { color: var(--text-dim); font-size: .9rem; }
+
+  .result-metric {
+    text-align: center;
+    padding: 48px 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .result-metric::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,255,136,.04), transparent);
+  }
+  .result-big {
+    font-family: 'Orbitron', monospace;
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--accent2);
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(0,255,136,.4);
+  }
+  .result-unit {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    color: var(--accent);
+    margin-top: 8px;
+  }
+  .result-desc { color: var(--text-dim); margin-top: 16px; font-size: .95rem; line-height: 1.5; }
+
+  /* ── CTA ── */
+  #cta {
+    background: var(--bg);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  #cta::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px; height: 400px;
+    background: radial-gradient(ellipse, rgba(0,229,255,.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .cta-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+  #cta .section-title { font-size: clamp(1.8rem, 4vw, 3rem); }
+
+  .cta-contact {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 48px;
+    flex-wrap: wrap;
+  }
+  .contact-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 20px 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color .2s, background .2s;
+    min-width: 240px;
+  }
+  .contact-item:hover { border-color: var(--accent); background: rgba(0,229,255,.05); }
+  .contact-icon { font-size: 1.5rem; }
+  .contact-info { text-align: left; }
+  .contact-label { font-size: .7rem; letter-spacing: .12em; color: var(--text-dim); text-transform: uppercase; }
+  .contact-val { color: #fff; font-size: 1.05rem; font-weight: 600; margin-top: 2px; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 28px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  footer .logo { font-size: 1rem; }
+  .footer-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .7rem;
+    color: var(--text-dim);
+    letter-spacing: .1em;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeRight {
+    from { opacity: 0; transform: translateY(-50%) translateX(40px); }
+    to { opacity: .92; transform: translateY(-50%) translateX(0); }
+  }
+  @keyframes floatDrone {
+    0%, 100% { transform: translateY(-50%) translateY(0); }
+    50% { transform: translateY(-50%) translateY(-14px); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .3; }
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .js-loaded .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  .js-loaded .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── SCAN LINE ── */
+  .scanline {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: rgba(0,229,255,.15);
+    pointer-events: none;
+    z-index: 9998;
+    animation: scan 8s linear infinite;
+  }
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100vh; }
+  }
+
+  /* ── HAMBURGER BUTTON ── */
+  .nav-burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 38px; height: 38px;
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 7px 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .nav-burger span {
+    display: block;
+    width: 100%; height: 2px;
+    background: var(--accent);
+    transition: transform .3s, opacity .3s;
+  }
+  .nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-burger.open span:nth-child(2) { opacity: 0; }
+  .nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* ── MOBILE MENU DRAWER ── */
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(3,10,15,.97);
+    backdrop-filter: blur(16px);
+    z-index: 999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 80px 32px 40px;
+    transform: translateX(100%);
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+  }
+  .mobile-menu.open { transform: translateX(0); }
+  .mobile-menu a {
+    display: block; width: 100%; text-align: center;
+    padding: 15px 24px;
+    font-family: 'Orbitron', monospace;
+    font-size: .85rem; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--text); text-decoration: none;
+    border: 1px solid transparent;
+    transition: color .2s, border-color .2s, background .2s;
+  }
+  .mobile-menu a:hover, .mobile-menu a:active {
+    color: var(--accent); border-color: var(--border); background: rgba(0,229,255,.05);
+  }
+  .mobile-menu .mob-cta { margin-top: 12px; border-color: var(--accent) !important; color: var(--accent) !important; }
+  .mobile-menu-flag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .65rem; color: var(--text-dim); letter-spacing: .15em; margin-top: 24px;
+  }
+
+  /* ── TABLET ── */
+  @media (max-width: 1100px) {
+    .hero-image { display: none; }
+    .about-row, .about-grid, .tech-layout, .results-layout { grid-template-columns: 1fr; gap: 40px; }
+    .adv-grid { grid-template-columns: 1fr 1fr; }
+    #hero { padding: 120px 32px 120px; }
+    .hero-stats { left: 32px; bottom: 40px; gap: 28px; }
+    section { padding: 70px 32px; }
+    nav { padding: 16px 24px; }
+    nav ul { display: none; }
+    .nav-burger { display: flex; }
+    .mobile-menu { display: flex; }
+    footer { padding: 20px 32px; flex-direction: column; gap: 10px; text-align: center; }
+    .tech-visual { position: static; }
+    .specs-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 600px) {
+    nav { padding: 14px 20px; }
+    .logo { font-size: 1.15rem; }
+
+    #hero { padding: 90px 20px 150px; min-height: 100svh; align-items: flex-start; }
+    h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); line-height: 1.15; }
+    .hero-badge { font-size: .6rem; padding: 5px 12px; letter-spacing: .1em; }
+    .hero-sub { font-size: 1rem; margin-bottom: 32px; }
+    .btn-group { flex-direction: column; gap: 12px; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; padding: 14px 20px; font-size: .75rem; }
+    .hero-stats {
+      left: 20px; right: 20px; bottom: 28px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; position: absolute;
+    }
+    .stat-val { font-size: 1.4rem; }
+    .stat-lbl { font-size: .6rem; }
+    .stat-item { background: rgba(0,229,255,.04); border: 1px solid var(--border); padding: 10px 14px; }
+
+    section { padding: 52px 20px; }
+    .section-title { font-size: clamp(1.3rem, 5vw, 1.8rem); }
+    .section-desc { font-size: .95rem; }
+    .divider { margin: 14px 0; }
+
+    .about-row { gap: 24px; }
+    .about-image img { max-width: 100%; border-radius: 8px; }
+    .about-points { margin-top: 0; gap: 12px; }
+    .about-point { padding: 12px 14px; }
+    .about-point-icon { font-size: 1.1rem; }
+    .about-point-text strong { font-size: .9rem; }
+    .about-point-text span { font-size: .83rem; }
+
+    .specs-grid { grid-template-columns: 1fr 1fr; margin-top: 32px; }
+    .spec-card { padding: 18px 14px; }
+    .spec-val { font-size: 1.2rem; }
+    .spec-name { font-size: .62rem; }
+    .spec-icon { font-size: 1.2rem; margin-bottom: 8px; }
+
+    .adv-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 32px; }
+    .adv-card { padding: 22px 18px; }
+    .adv-card h3 { font-size: .88rem; }
+    .adv-card p { font-size: .88rem; }
+    .adv-icon { font-size: 1.5rem; margin-bottom: 10px; }
+
+    .tech-layout { gap: 20px; }
+    .tech-item { padding: 14px 16px; gap: 12px; }
+    .tech-item h4 { font-size: .88rem; }
+    .tech-item p { font-size: .83rem; }
+    .tech-callout p { font-size: .68rem; }
+    .tech-visual .image-group { flex-direction: column; }
+    .tech-visual .image-group img { width: 100%; }
+
+    .results-layout { gap: 28px; }
+    .result-card { padding: 16px 18px; gap: 12px; }
+    .result-card h4 { font-size: .88rem; }
+    .result-card p { font-size: .83rem; }
+    .result-icon { font-size: 1.4rem; }
+    .result-metric { padding: 28px 20px; }
+    .result-big { font-size: 3.5rem; }
+    .result-unit { font-size: 1.1rem; }
+    .result-desc { font-size: .83rem; }
+    .result-cards { gap: 10px; }
+
+    #cta { padding: 52px 20px; }
+    #cta .section-title { font-size: clamp(1.4rem, 5vw, 2rem); }
+    .cta-contact { flex-direction: column; align-items: stretch; gap: 10px; margin-top: 28px; }
+    .contact-item { width: 100%; min-width: unset; padding: 15px 18px; }
+    .contact-val { font-size: .92rem; }
+    #cta .btn-primary { width: 100%; justify-content: center; padding: 15px 20px; margin-top: 28px; }
+
+    footer { padding: 18px 20px; flex-direction: column; gap: 8px; text-align: center; }
+    .footer-text { font-size: .58rem; }
+    .scanline { display: none; }
+  }
+
+  @media (max-width: 360px) {
+    h1 { font-size: 1.4rem; }
+    .specs-grid { grid-template-columns: 1fr 1fr; }
+    .spec-val { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Fly<span>Shot</span></div>
+  <ul>
+    <li><a href="#about">Про продукт</a></li>
+    <li><a href="#specs">Характеристики</a></li>
+    <li><a href="#advantages">Переваги</a></li>
+    <li><a href="#tech">Технології</a></li>
+    <li><a href="#results">Результати</a></li>
+    <li><a href="#cta" class="nav-cta">Зв'язатись</a></li>
+  </ul>
+  <button class="nav-burger" id="burger" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about"      onclick="closeMob()">Про продукт</a>
+  <a href="#specs"      onclick="closeMob()">Характеристики</a>
+  <a href="#advantages" onclick="closeMob()">Переваги</a>
+  <a href="#tech"       onclick="closeMob()">Технології</a>
+  <a href="#results"    onclick="closeMob()">Результати</a>
+  <a href="#cta"        onclick="closeMob()" class="mob-cta">Зв'язатись</a>
+  <div class="mobile-menu-flag">FLYSHOT · DEFENSE TECH UKRAINE 🇺🇦</div>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">▸ DEFENSE TECH · КЛАС: ПЕРЕХОПЛЮВАЧ</div>
+    <h1>Нове покоління<br><span class="accent">перехоплення</span><br><span class="accent2">повітряних загроз</span></h1>
+    <p class="hero-sub">
+      Автономний БПЛА-перехоплювач з модульним озброєнням для нейтралізації FPV-дронів, DJI Mavic та інших повітряних загроз у реальному часі.
+    </p>
+    <div class="btn-group">
+      <a href="#about" class="btn-primary">
+        ⟶ Дізнатись більше
+      </a>
+      <a href="#cta" class="btn-secondary">
+        ◈ Зв'язатись
+      </a>
+    </div>
+  </div>
+
+  <!-- drone image hero -->
+  <img class="hero-image" src="IMG_2666.png" alt="FlyShot БПЛА" >
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-val">20км</div>
+      <div class="stat-lbl">Дальність</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">110</div>
+      <div class="stat-lbl">км/год макс.</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">30хв</div>
+      <div class="stat-lbl">Час польоту</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">6</div>
+      <div class="stat-lbl">Стволів</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-row reveal">
+    <div class="about-text">
+      <div class="section-label">// 01 — ПРО ПРОДУКТ</div>
+      <h2 class="section-title">FlyShot — повітряний мисливець<br>нового покоління</h2>
+      <div class="divider"></div>
+      <p class="section-desc">
+        Компактний, швидкий та смертоносний. FlyShot — це БПЛА-перехоплювач з модульною системою озброєння, розроблений для надійної нейтралізації ворожих FPV та дронів-розвідників у польоті.
+      </p>
+    </div>
+    <div class="about-image">
+      <img src="IMG_2654.png">
+    </div>
+  </div>
+  <div class="about-row reveal">
+    <div class="about-image">
+      <img src="IMG_2662.png">
+    </div>
+      <div class="about-points">
+        <div class="about-point">
+          <span class="about-point-icon">🎯</span>
+          <div class="about-point-text">
+            <strong>Призначення</strong>
+            <span>Знищення FPV-дронів, DJI Mavic та інших БПЛА-загроз у повітрі без ризику для особового складу.</span>
+          </div>
+        </div>
+        <div class="about-point">
+          <span class="about-point-icon">⚙️</span>
+          <div class="about-point-text">
+            <strong>Платформа</strong>
+            <span>FPV-платформа до 10 дюймів з модульним кріпленням озброєння та польотним контролером.</span>
+          </div>
+        </div>
+        <div class="about-point">
+          <span class="about-point-icon">🔦</span>
+          <div class="about-point-text">
+            <strong>Підсвічування цілі</strong>
+            <span>Інтегрована система лазерного підсвічування для точного захоплення та супроводу цілі.</span>
+          </div>
+        </div>
+        <div class="about-point">
+          <span class="about-point-icon">🔫</span>
+          <div class="about-point-text">
+            <strong>Озброєння</strong>
+            <span>Модульний блок від 2 до 6 стволів з ефективною дальністю ураження до 30 метрів.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECS -->
+<section id="specs">
+  <div class="reveal">
+    <div class="section-label">// 02 — ХАРАКТЕРИСТИКИ</div>
+    <h2 class="section-title">Технічні параметри</h2>
+    <div class="divider"></div>
+    <p class="section-desc">Підтверджені характеристики за результатами польотних випробувань.</p>
+  </div>
+  <div class="specs-grid reveal">
+    <div class="spec-card">
+      <div class="spec-icon">📡</div>
+      <div class="spec-val">20 км</div>
+      <div class="spec-name">Дальність дії</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">⏱️</div>
+      <div class="spec-val">30 хв</div>
+      <div class="spec-name">Час польоту</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">⚡</div>
+      <div class="spec-val">110</div>
+      <div class="spec-name">Макс. швидкість (км/год)</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">✈️</div>
+      <div class="spec-val">75–85</div>
+      <div class="spec-name">Крейсерська швидкість (км/год)</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">🏔️</div>
+      <div class="spec-val">2 км</div>
+      <div class="spec-name">Робоча висота</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">🔋</div>
+      <div class="spec-val">6S 3P</div>
+      <div class="spec-name">Акумулятор Li-ion</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">🔫</div>
+      <div class="spec-val">2–6</div>
+      <div class="spec-name">Кількість стволів</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">💥</div>
+      <div class="spec-val">30 м</div>
+      <div class="spec-name">Радіус ураження техніки</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">🎯</div>
+      <div class="spec-val">15 м</div>
+      <div class="spec-name">Ураження живих цілей</div>
+    </div>
+  </div>
+</section>
+
+<!-- ADVANTAGES -->
+<section id="advantages">
+  <div class="reveal">
+    <div class="section-label">// 03 — ПЕРЕВАГИ</div>
+    <h2 class="section-title">Чому FlyShot?</h2>
+    <div class="divider"></div>
+    <p class="section-desc">Революційний підхід до протидії БПЛА-загрозам — ефективний, економічний, безпечний.</p>
+  </div>
+  <div class="adv-grid reveal">
+    <div class="adv-card" data-num="01">
+      <div class="adv-icon">♻️</div>
+      <h3>Багаторазове використання</h3>
+      <p>На відміну від одноразових ракет — FlyShot повертається після місії. Перезарядка, перевірка, і знову в бій.</p>
+    </div>
+    <div class="adv-card" data-num="02">
+      <div class="adv-icon">💰</div>
+      <h3>Економічна ефективність</h3>
+      <p>Вартість перехоплення у десятки разів нижча порівняно з ракетними комплексами протиповітряної оборони.</p>
+    </div>
+    <div class="adv-card" data-num="03">
+      <div class="adv-icon">🛡️</div>
+      <h3>Зниження ризиків</h3>
+      <p>Оператор знаходиться поза зоною ураження. Жодного ризику для особового складу та дорогої техніки.</p>
+    </div>
+    <div class="adv-card" data-num="04">
+      <div class="adv-icon">🚀</div>
+      <h3>Висока ефективність</h3>
+      <p>Підтверджена здатність до перехоплення та нейтралізації FPV-дронів і дронів-камікадзе в умовах реальних випробувань.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TECH -->
+<section id="tech">
+  <div class="reveal">
+    <div class="section-label">// 04 — ТЕХНОЛОГІЇ</div>
+    <h2 class="section-title">Під капотом FlyShot</h2>
+    <div class="divider"></div>
+    <p class="section-desc">Інтеграція передових компонентів у бойову платформу нового покоління.</p>
+  </div>
+  <div class="tech-layout reveal">
+    <div class="tech-list">
+      <div class="tech-item active">
+        <span class="tech-num">01</span>
+        <div>
+          <h4>Система підсвічування цілі</h4>
+          <p>Лазерне підсвічування для точного захоплення та утримання ворожого БПЛА в зоні ураження під час маневрів.</p>
+        </div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-num">02</span>
+        <div>
+          <h4>3D-стабілізація озброєння</h4>
+          <p>Антивібраційна платформа для стабілізації блоку стволів забезпечує точну стрільбу під час польоту.</p>
+        </div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-num">03</span>
+        <div>
+          <h4>Інтегрований стрілецький модуль</h4>
+          <p>Модульний блок 2–6 стволів кріпиться на стандартне шасі. Швидка заміна в польових умовах.</p>
+        </div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-num">04</span>
+        <div>
+          <h4>Мультирежимне управління</h4>
+          <p>Ручний FPV-режим для досвідченого оператора або напівавтономний режим супроводу цілі.</p>
+        </div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-num">05</span>
+        <div>
+          <h4>FPV-відеолінк дальньої дії</h4>
+          <p>ADON / ExpressLRS зв'язок для стабільного відеопотоку на дистанції до 20 км у складному радіосередовищі.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-visual">
+      <div class="image-group">
+        <img src="IMG_2803.png">
+        <img src="IMG_2805.png">
+      </div>
+      <div class="tech-callout">
+        <p>
+          ▸ PLATFORM: FPV 10" · POWER: 6S3P Li-ion<br>
+          ▸ CONTROL: ELRS / ADON · FPV: HD VIDEO LINK<br>
+          ▸ PAYLOAD: MODULAR 2–6 BARREL UNIT<br>
+          ▸ STATUS: FIELD TESTED ✓
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results">
+  <div class="reveal">
+    <div class="section-label">// 05 — РЕЗУЛЬТАТИ ВИПРОБУВАНЬ</div>
+    <h2 class="section-title">Підтверджено в полі</h2>
+    <div class="divider"></div>
+    <p class="section-desc">FlyShot пройшов реальні польотні випробування з документально підтвердженими результатами.</p>
+  </div>
+  <div class="results-layout reveal">
+    <div class="result-cards">
+      <div class="result-card">
+        <span class="result-icon">✅</span>
+        <div>
+          <h4>Польотні випробування завершено</h4>
+          <p>Повний цикл тестування платформи, системи управління та стрілецького модуля.</p>
+        </div>
+      </div>
+      <div class="result-card">
+        <span class="result-icon">🎯</span>
+        <div>
+          <h4>Підтверджено ураження на 15 м</h4>
+          <p>Реальні стрільби з AirK Li-ion 6S3P підтвердили ефективне ураження цілі на дистанції 15 м.</p>
+        </div>
+      </div>
+      <div class="result-card">
+        <span class="result-icon">🔁</span>
+        <div>
+          <h4>Багаторазовість підтверджена</h4>
+          <p>Платформа витримала серію бойових місій без критичних відмов конструктивних елементів.</p>
+        </div>
+      </div>
+      <div class="result-card">
+        <span class="result-icon">📊</span>
+        <div>
+          <h4>Відеоматеріали та звіти</h4>
+          <p>Детальна технічна документація та відеозаписи випробувань доступні за запитом для партнерів.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-metric">
+      <div class="result-big">15</div>
+      <div class="result-unit">МЕТРІВ</div>
+      <p class="result-desc">
+        Підтверджена дальність ефективного ураження живих цілей у реальних умовах випробувань з акумулятором AirK Li-ion 6S3P
+      </p>
+      <div style="margin-top:28px; padding-top:24px; border-top:1px solid var(--border);">
+        <div style="display:flex; justify-content:space-around;">
+          <div style="text-align:center;">
+            <div style="font-family:'Orbitron',monospace; font-size:1.6rem; color:var(--accent); font-weight:700;">30м</div>
+            <div style="font-size:.75rem; color:var(--text-dim); letter-spacing:.1em; text-transform:uppercase; margin-top:4px;">Ураження техніки</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Orbitron',monospace; font-size:1.6rem; color:var(--accent); font-weight:700;">100%</div>
+            <div style="font-size:.75rem; color:var(--text-dim); letter-spacing:.1em; text-transform:uppercase; margin-top:4px;">Тести пройдено</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-inner reveal">
+    <div class="section-label">// 06 — КОНТАКТ</div>
+    <h2 class="section-title">Готові до співпраці.<br>Зв'яжіться з нами.</h2>
+    <div class="divider" style="margin:24px auto;"></div>
+    <p class="section-desc" style="margin:0 auto; text-align:center;">
+      Для інвесторів, військових партнерів та державних структур — надаємо повну технічну документацію та демонстрацію за запитом.
+    </p>
+    <div class="cta-contact">
+      <a href="tel:+380000000000" class="contact-item">
+        <span class="contact-icon">📞</span>
+        <div class="contact-info">
+          <div class="contact-label">Телефон</div>
+          <div class="contact-val">+38 (067) 220-94-90</div>
+        </div>
+      </a>
+      <a href="/cdn-cgi/l/email-protection#a9c0c7cfc6e9cfc5d0dac1c6dd87dcc8" class="contact-item">
+        <span class="contact-icon">✉️</span>
+        <div class="contact-info">
+          <div class="contact-label">Email</div>
+          <div class="contact-val"><span class="__cf_email__" data-cfemail="3f565159507f5953464c57504b114a5e">[email&#160;protected]</span></div>
+        </div>
+      </a>
+      <a href="#" class="contact-item">
+        <span class="contact-icon">👤</span>
+        <div class="contact-info">
+          <div class="contact-label">Менеджер проєкту</div>
+          <div class="contact-val">Максим Серга</div>
+        </div>
+      </a>
+    </div>
+    <div style="margin-top:48px;">
+      <a href="/cdn-cgi/l/email-protection#b1d8dfd7def1d7ddc8c2d9dec59fc4d0" class="btn-primary" style="font-size:.9rem; padding:16px 48px;">
+        ⟶ Надіслати запит
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">Fly<span>Shot</span></div>
+  <div class="footer-text">© 2026 FLYSHOT · DEFENSE TECH UKRAINE · ALL RIGHTS RESERVED</div>
+  <div class="footer-text">MADE IN UKRAINE 🇺🇦</div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Mark JS as loaded so reveal animation activates
+  document.body.classList.add('js-loaded');
+
+  // Burger menu
+  const burger = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  function closeMob() {
+    burger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  if (burger) {
+    burger.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      burger.classList.toggle('open', isOpen);
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+  }
+
+  // Reveal on scroll — threshold 0 + rootMargin so large blocks trigger reliably on mobile
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -60px 0px' });
+  reveals.forEach(el => io.observe(el));
+
+  // Tech item active
+  document.querySelectorAll('.tech-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.tech-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // Stagger spec cards
+  document.querySelectorAll('.spec-card').forEach((card, i) => {
+    card.style.transitionDelay = `${i * 40}ms`;
+  });
