@@ -1163,10 +1163,19 @@
     </div>
     <div style="margin-top:48px;">
       <a href="mailto:sergam@gmail.com?subject=Запит%20по%20Svarog"
-      onclick="if(window.innerWidth > 768){ window.open('https://mail.google.com/mail/?view=cm&fs=1&to=sergam@gmail.com&su=Запит%20по%20Svarog','gmailCompose','width=600,height=700'); return false; }"
+      onclick="
+      if(window.innerWidth > 768){
+        window.open('https://mail.google.com/mail/?view=cm&fs=1&to=sergam@gmail.com&su=Запит%20по%20Svarog','gmailCompose','width=600,height=700');
+        return false;
+      }
+      window.location.href = 'googlegmail://co?to=sergam@gmail.com&subject=Запит%20по%20Svarog';
+      setTimeout(function(){
+        window.location.href = 'mailto:sergam@gmail.com?subject=Запит%20по%20Svarog';
+      }, 1500);
+      return false;"
       class="btn-primary"
-      style="font-size:.9rem; padding:16px 48px;"> 
-      ⟶ Надіслати запит на Gmail</a>
+      style="font-size:.9rem; padding:16px 48px;">
+      ⟶ Надіслати запит на Gmail </a>
     </div>
   </div>
 </section>
