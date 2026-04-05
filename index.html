@@ -708,7 +708,6 @@
     section { padding: 70px 32px; }
     nav { padding: 16px 24px; }
     nav ul { display: none; }
-    .nav-burger { display: flex; }
     footer { padding: 20px 32px; flex-direction: column; gap: 10px; text-align: center; }
     .tech-visual { position: static; }
     .specs-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
@@ -827,19 +826,6 @@
     <span></span><span></span><span></span>
   </button>
 </nav>
-
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#about"      onclick="closeMob()">Про продукт</a>
-  <a href="#specs"      onclick="closeMob()">Характеристики</a>
-  <a href="#advantages" onclick="closeMob()">Переваги</a>
-  <a href="#tech"       onclick="closeMob()">Технології</a>
-  <a href="#results"    onclick="closeMob()">Результати</a>
-  <a href="#cta"        onclick="closeMob()" class="mob-cta">Зв'язатись</a>
-  <div class="mobile-menu-flag">SVAROG · DEFENSE TECH UKRAINE 🇺🇦</div>
-  <button class="menu-close" onclick="closeMob()">
-  </button>
-</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -1179,7 +1165,8 @@
       <a href="mailto:sergam@gmail.com?subject=Запит%20по%20Svarog"
       onclick="if(window.innerWidth > 768){ window.open('https://mail.google.com/mail/?view=cm&fs=1&to=sergam@gmail.com&su=Запит%20по%20Svarog','gmailCompose','width=600,height=700'); return false; }"
       class="btn-primary"
-      style="font-size:.9rem; padding:16px 48px;"> ⟶ Надіслати запит </a>
+      style="font-size:.9rem; padding:16px 48px;"> 
+      ⟶ Надіслати запит на Gmail</a>
     </div>
   </div>
 </section>
@@ -1194,29 +1181,6 @@
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // Mark JS as loaded so reveal animation activates
   document.body.classList.add('js-loaded');
-
-  // Burger menu
-  const burger = document.getElementById('burger');
-  const mobileMenu = document.getElementById('mobileMenu');
-  function closeMob() {
-    burger.classList.remove('open');
-    mobileMenu.classList.remove('open');
-    mobileMenu.style.display = 'none';
-    document.body.style.overflow = '';
-  }
-  if (burger) {
-    burger.addEventListener('click', () => {
-      const isOpen = !mobileMenu.classList.contains('open');
-      if (isOpen) {
-        mobileMenu.style.display = 'flex';
-        setTimeout(() => mobileMenu.classList.add('open'), 10);
-        burger.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      } else {
-        closeMob();
-      }
-    });
-  }
 
   // Reveal on scroll — threshold 0 + rootMargin so large blocks trigger reliably on mobile
   const reveals = document.querySelectorAll('.reveal');
