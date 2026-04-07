@@ -1211,11 +1211,11 @@
           <div class="contact-val">+38 (067) 220-94-90</div>
         </div>
       </a>
-      <a href="/cdn-cgi/l/email-protection#1d6e786f7a7c705d7a707c7471337e7270226e687f77787e6920cd8acdadcda2cda5cc9f3dcda2cda33d4e6b7c6f727a" class="contact-item">
+      <a href="mailto:sergam@gmail.com?subject=Запит по Svarog" class="contact-item">
         <span class="contact-icon">✉️</span>
         <div class="contact-info">
           <div class="contact-label">Email</div>
-          <div class="contact-val"><span class="__cf_email__" data-cfemail="f083958297919db0979d91999cde939f9d">[email&#160;protected]</span></div>
+          <div class="contact-val">sergam@gmail.com</div>
         </div>
       </a>
       <a href="#" class="contact-item">
@@ -1227,7 +1227,8 @@
       </a>
     </div>
     <div style="margin-top:48px;">
-      <a href="/cdn-cgi/l/email-protection#5a293f283d3b371a3d373b33367439353765292f38303f392e678acd8aea8ae58ae28bd87f686a8ae58ae47f686a092c3b28353d" onclick="
+      <a href="mailto:sergam@gmail.com?subject=Запит%20по%20Svarog"
+      onclick="
       if(window.innerWidth > 768){
         window.open('https://mail.google.com/mail/?view=cm&fs=1&to=sergam@gmail.com&su=Запит%20по%20Svarog','gmailCompose','width=600,height=700');
         return false;
@@ -1236,7 +1237,9 @@
       setTimeout(function(){
         window.location.href = 'mailto:sergam@gmail.com?subject=Запит%20по%20Svarog';
       }, 1500);
-      return false;" class="btn-primary" style="font-size:.9rem; padding:16px 48px;">
+      return false;"
+      class="btn-primary"
+      style="font-size:.9rem; padding:16px 48px;">
       ⟶ Надіслати запит на Gmail </a>
     </div>
   </div>
@@ -1249,7 +1252,7 @@
   <div class="footer-text">MADE IN UKRAINE 🇺🇦</div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // Mark JS as loaded so reveal animation activates
   document.body.classList.add('js-loaded');
 
@@ -1264,4 +1267,13 @@
 
   // Tech item active
   document.querySelectorAll('.tech-item').forEach(item => {
-  
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.tech-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // Stagger spec cards
+  document.querySelectorAll('.spec-card').forEach((card, i) => {
+    card.style.transitionDelay = `${i * 40}ms`;
+  });
